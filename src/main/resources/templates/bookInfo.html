@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang='en' xmlns:th='http://www.thymeleaf.org'>
+<head>
+    <meta charset='UTF-8'>
+    <title>Bookstore - Info</title>
+    <link href='/css/bootstrap.min.css' rel='stylesheet'/>
+    <link href='/css/bootstrap-icons.css' rel='stylesheet'/>
+</head>
+<body>
+<nav class='navbar navbar-expand-lg navbar-dark bg-dark'>
+    <div class='container'>
+        <a class='navbar-brand' href='/'>BookStore</a>
+        <button class='navbar-toggler' type='button' data-bs-toggle='collapse' data-bs-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation'>
+            <span class='navbar-toggler-icon'></span>
+        </button>
+        <div class='collapse navbar-collapse' id='navbarSupportedContent'>
+            <ul class='navbar-nav me-auto mb-2 mb-lg-0'>
+                <li class='nav-item'>
+                    <a class='nav-link' href='/books/create'>
+                        <i class='bi-journal-plus'></i>
+                        Add book
+                    </a>
+                </li>
+                <li class='nav-item'>
+                    <a class='nav-link' href='/accounting'>
+                        <i class='bi-graph-up'></i>
+                        Accounting
+                    </a>
+                </li>
+            </ul>
+            <ul class='navbar-nav me-0 mb-2 mb-lg-0 d-flex'>
+                <li class='nav-item'>
+                    <btn class='nav-link' onclick='toShoppingCart()'>
+                        <i class='bi-cart4'></i>
+                        Shopping cart
+                        <span class='translate-middle badge rounded-pill bg-danger' id='shoppingCart'>
+                            99+
+                        </span>
+                    </btn>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class='container mt-5'>
+    <h3 th:text='${"Book: " + book.title}'></h3>
+    <div th:text='${"Author: " + book.author}'></div>
+    <div th:text='${"Year: " + book.year}'></div>
+    <div th:text='${"Amount: " + book.amount}'></div>
+    <div th:text='${"Price: " + #numbers.formatDecimal(book.price, 1, 2) + " €"}'></div>
+
+    <div class='form-group mt-3'>
+        <div class='col-md-8'>
+            <a th:href='@{"/books/" + ${book.id} + "/edit"}' class='btn btn-light'>Edit</a>
+            <form th:method='delete' th:action='@{"/books/delete/" + ${book.id}}' style='display: inline'>
+                <button type='submit' class='btn btn-danger'>Delete</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src='/js/index.js'></script>
+</body>
+</html>

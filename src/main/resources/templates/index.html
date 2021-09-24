@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Bookstore</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/bootstrap-icons.css" rel="stylesheet"/>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">BookStore</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="/books/create">
+                        <i class="bi-journal-plus"></i>
+                        Add book
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/accounting">
+                        <i class="bi-graph-up"></i>
+                        Accounting
+                    </a>
+                </li>
+            </ul>
+            <ul class="navbar-nav me-0 mb-2 mb-lg-0 d-flex">
+                <li class="nav-item">
+                    <btn class="nav-link pe-auto" onclick="toShoppingCart()">
+                        <i class="bi-cart4"></i>
+                        Shopping cart
+                        <span class="translate-middle badge rounded-pill bg-danger" id="shoppingCart">
+                            99+
+                        </span>
+                    </btn>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <h3>BookStore</h3>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Year</th>
+            <th>Price</th>
+            <th>Amount</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="book : ${books}">
+            <td><a th:href="@{'/books/' + ${book.id} + '/info'}" th:text="${book.title}"></a></td>
+            <td th:text="${book.author}"></td>
+            <td th:text="${book.year}"></td>
+            <td th:text="${#numbers.formatDecimal(book.price, 1, 2) + ' €'}"></td>
+            <td th:text="${book.amount}"></td>
+            <td>
+                <a class="btn btn-light" th:href="@{'/books/' + ${book.id} + '/edit'}">
+                    <i class="bi-pencil"></i>
+                    Edit
+                </a>
+                <button th:if="${book.amount > 0}" th:onclick="'javascript:addToCart(' + ${book.id} + ')'"
+                        class="btn btn-info">
+                    <i class="bi-cart-plus"></i>
+                    Add to cart
+                </button>
+                <form th:action="@{'/books/delete/' + ${book.id}}" method="post" style="display: inline;">
+                    <button class="btn btn-danger" type="submit">
+                        <i class="bi-trash"></i>
+                        Delete
+                    </button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="/js/index.js"></script>
+<script>
+    function addToCart(id) {
+      const shoppingCartRaw = sessionStorage.getItem("shoppingCart");
+      let shoppingCart = [];
+      if (shoppingCartRaw) {
+        shoppingCart = JSON.parse(shoppingCartRaw);
+      }
+      shoppingCart.push(id);
+      sessionStorage.setItem("shoppingCart", JSON.stringify(shoppingCart));
+      renderShoppingCartBadge();
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang='en' xmlns:th='http://www.thymeleaf.org'>
+<head>
+    <meta charset='UTF-8'>
+    <title>Bookstore - Update Book</title>
+    <link href='/css/bootstrap.min.css' rel='stylesheet'/>
+    <link href='/css/style.css' rel='stylesheet'/>
+    <link href='/css/bootstrap-icons.css' rel='stylesheet'/>
+</head>
+<body>
+<nav class='navbar navbar-expand-lg navbar-dark bg-dark'>
+    <div class='container'>
+        <a class='navbar-brand' href='/'>BookStore</a>
+        <button class='navbar-toggler' type='button' data-bs-toggle='collapse' data-bs-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation'>
+            <span class='navbar-toggler-icon'></span>
+        </button>
+        <div class='collapse navbar-collapse' id='navbarSupportedContent'>
+            <ul class='navbar-nav me-auto mb-2 mb-lg-0'>
+                <li class='nav-item'>
+                    <a class='nav-link' href='/books/create'>
+                        <i class='bi-journal-plus'></i>
+                        Add book
+                    </a>
+                </li>
+                <li class='nav-item'>
+                    <a class='nav-link' href='/accounting'>
+                        <i class='bi-graph-up'></i>
+                        Accounting
+                    </a>
+                </li>
+            </ul>
+            <ul class='navbar-nav me-0 mb-2 mb-lg-0 d-flex'>
+                <li class='nav-item'>
+                    <btn class='nav-link' onclick='toShoppingCart()'>
+                        <i class='bi-cart4'></i>
+                        Shopping cart
+                        <span class='translate-middle badge rounded-pill bg-danger' id='shoppingCart'>
+                            99+
+                        </span>
+                    </btn>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class='container mt-5'>
+    <form class='form-horizontal' method='post' th:object='${book}' th:action='@{"/books/update/" + ${book.id}}'>
+        <input type='hidden' th:field='*{id}' th:value='${book.id}'>
+
+        <h3 th:text='${"Edit " + book.title}'></h3>
+
+        <div class='alert alert-danger' th:if='${#fields.hasErrors("*")}'>
+            <p th:each='err : ${#fields.errors("*")}' th:text='${err}'></p>
+        </div>
+
+        <div class='form-group mt-3'>
+            <div class='col-md-8'>
+                <label for='title'>Title</label>
+                <input id='title' th:field='*{title}' type='text' placeholder='Title' class='form-control input-md' required=''>
+                <div class='invalid-feedback' th:if='${#fields.hasErrors("title")}' th:errors='*{title}'></div>
+                <div class='valid-feedback' th:if='${!#fields.hasErrors("title") && book.title != "" && book.title != null}'>Looks good!</div>
+            </div>
+        </div>
+
+        <div class='form-group mt-3'>
+            <div class='col-md-8'>
+                <label for='author'>Author</label>
+                <input id='author' th:field='*{author}' type='text' placeholder='Author' class='form-control input-md' required=''>
+                <div class='invalid-feedback' th:if='${#fields.hasErrors("author")}' th:errors='*{author}'></div>
+                <div class='valid-feedback' th:if='${!#fields.hasErrors("author") && book.author != "" && book.author != null}'>Looks good!</div>
+            </div>
+        </div>
+
+        <div class='form-group mt-3'>
+            <div class='col-md-8'>
+                <label for='year'>Year</label>
+                <input id='year' th:field='*{year}' type='text' placeholder='Year' class='form-control input-md' required=''>
+                <div class='invalid-feedback' th:if='${#fields.hasErrors("year")}' th:errors='*{year}'></div>
+                <div class='valid-feedback' th:if='${!#fields.hasErrors("year") && book.year != 0 && book.year != null}'>Looks good!</div>
+            </div>
+        </div>
+
+        <div class='form-group mt-3'>
+            <div class='col-md-8'>
+                <label for='price'>Price</label>
+                <input id='price' th:field='*{price}' type='text' placeholder='Price' class='form-control input-md' required=''>
+                <div class='invalid-feedback' th:if='${#fields.hasErrors("price")}' th:errors='*{price}'></div>
+                <div class='valid-feedback' th:if='${!#fields.hasErrors("price") && book.price != 0 && book.price != null}'>Looks good!</div>
+            </div>
+        </div>
+
+        <div class='form-group mt-3'>
+            <div class='col-md-8'>
+                <label for='amount'>Amount</label>
+                <input id='amount' th:field='*{amount}' type='number' placeholder='Amount' class='form-control input-md' required=''>
+                <div class='invalid-feedback' th:if='${#fields.hasErrors("amount")}' th:errors='*{amount}'></div>
+                <div class='valid-feedback' th:if='${!#fields.hasErrors("amount") && book.amount != 0 && book.amount != null}'>Looks good!</div>
+            </div>
+        </div>
+
+        <div class='form-group mt-3'>
+            <div class='col-md-8'>
+                <button type='submit' class='btn btn-success'>Confirm</button>
+                <a class='btn btn-danger' th:href='@{/books}'>Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src='/js/index.js'></script>
+</body>
+</html>

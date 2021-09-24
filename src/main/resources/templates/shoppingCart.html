@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang='en' xmlns:th='http://www.thymeleaf.org'>
+<head>
+    <meta charset='UTF-8'>
+    <title>Bookstore</title>
+    <link href='/css/bootstrap.min.css' rel='stylesheet'/>
+    <link href='/css/bootstrap-icons.css' rel='stylesheet'/>
+</head>
+<body>
+<nav class='navbar navbar-expand-lg navbar-dark bg-dark'>
+    <div class='container'>
+        <a class='navbar-brand' href='/'>BookStore</a>
+        <button class='navbar-toggler' type='button' data-bs-toggle='collapse' data-bs-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation'>
+            <span class='navbar-toggler-icon'></span>
+        </button>
+        <div class='collapse navbar-collapse' id='navbarSupportedContent'>
+            <ul class='navbar-nav me-auto mb-2 mb-lg-0'>
+                <li class='nav-item'>
+                    <a class='nav-link' href='/books/create'>
+                        <i class='bi-journal-plus'></i>
+                        Add book
+                    </a>
+                </li>
+                <li class='nav-item'>
+                    <a class='nav-link' href='/accounting'>
+                        <i class='bi-graph-up'></i>
+                        Accounting
+                    </a>
+                </li>
+            </ul>
+            <ul class='navbar-nav me-0 mb-2 mb-lg-0 d-flex'>
+                <li class='nav-item'>
+                    <btn class='nav-link' onclick='toShoppingCart()'>
+                        <i class='bi-cart4'></i>
+                        Shopping cart
+                        <span class='translate-middle badge rounded-pill bg-danger' id='shoppingCart'>
+                            99+
+                        </span>
+                    </btn>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class='container mt-5'>
+    <form class='form-horizontal needs-validation' method='post' th:object='${receipt}' th:action='@{/books/buy}'>
+        <h3>Shopping cart</h3>
+
+        <table class='table'>
+            <thead>
+            <tr>
+                <th>Book</th>
+                <th>Price</th>
+                <th>Amount</th>
+                <th>Discount</th>
+                <th>Position sum</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each='pos, index : *{receiptPositions}' class='table-row'>
+                <td>
+                    <span th:text='${pos.title + " by " + pos.author}'></span>
+                    <input type='hidden' th:value='${pos.bookId}' th:field='*{receiptPositions[__${index.index}__].bookId}'>
+                    <input type='hidden' th:value='${pos.title}' th:field='*{receiptPositions[__${index.index}__].title}'>
+                    <input type='hidden' th:value='${pos.author}' th:field='*{receiptPositions[__${index.index}__].author}'>
+                    <input type='hidden' th:value='${pos.price}' th:field='*{receiptPositions[__${index.index}__].price}'>
+                    <input type='hidden' value='0.0' th:field='*{receiptPositions[__${index.index}__].cost}'>
+                </td>
+                <td class='price' th:text='${#numbers.formatDecimal(pos.price, 1, 2) + " €"}'></td>
+                <td>
+                    <input th:field='*{receiptPositions[__${index.index}__].amount}' type='number'
+                           placeholder='Amount' th:onchange="'calculateCost(\'' + ${index.index} + '\');'"
+                           class='form-control input-md amount' required='' min='1' th:max='${pos.currentStorageVolume}'>
+                </td>
+                <td>
+                    <input th:field='*{receiptPositions[__${index.index}__].discountPercentage}' type='number'
+                           placeholder='Discount' class='form-control input-md discount' required='' min='0'
+                           max='20' th:onchange="'calculateCost(\'' + ${index.index} + '\');'">
+                </td>
+                <td><span class='cost'></span> €</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div>Sum: <span id='sum'>0</span> €</div>
+
+        <div class='form-group'>
+            <div class='col-md-8'>
+                <button type='submit' onclick='clearCart()'
+                        class='btn btn-success'>
+                    <i class='bi-cart-check'></i>
+                    Buy
+                </button>
+                <button class='btn btn-danger' onclick='clearCart()'>
+                    <i class='bi-cart-x'></i>
+                    Clear cart
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src='/js/index.js'></script>
+<script>
+  function calculateCost(index) {
+    const amount = parseFloat(document.getElementsByClassName('amount')[index].value);
+    const discount = parseFloat(document.getElementsByClassName('discount')[index].value);
+    const price = parseFloat(document.getElementsByClassName('price')[index].innerText);
+    document.getElementsByClassName('cost')[index].innerText = (price * (1 - discount / 100) * amount).toFixed(2);
+    calculateSum();
+  }
+
+  function clearCart() {
+    sessionStorage.setItem('shoppingCart', JSON.stringify([]));
+    window.location = '/books';
+  }
+
+  function calculateSum() {
+    document.getElementById('sum').innerText = Array.from(document.getElementsByClassName('cost'))
+      .map(item => parseFloat(item.innerText)).reduce((a, b) => a + b).toFixed(2);
+  }
+
+  (function() {
+    const size = document.getElementsByClassName('table-row').length;
+    for (let i = 0; i < size; i++) {
+      calculateCost(i);
+    }
+  })();
+</script>
+</body>
+</html>
